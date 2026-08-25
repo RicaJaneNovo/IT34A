@@ -1,46 +1,26 @@
 <?php
 
+// Load configuration and database connection
 require_once __DIR__ . '/config/config.php';
 
-// Test user information
-$user_id = null;
-$user_email = 'test@example.com';
-
-// Test activity
-$success = logActivity(
+// Test activity logger
+$result = logActivity(
     $pdo,
-    $user_id,
-    $user_email,
-    'test_activity',
+    null,
+    'test@example.com',
+    'TEST_ACTIVITY',
     'success'
 );
 
+// Show result
+if ($result) {
+
+    echo "<h2>Activity log inserted successfully!</h2>";
+
+} else {
+
+    echo "<h2>Activity log failed to insert.</h2>";
+
+}
+
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Activity Logger Test</title>
-</head>
-
-<body>
-
-    <?php if ($success): ?>
-
-        <h1>Success!</h1>
-        <p>Activity log inserted successfully.</p>
-
-    <?php else: ?>
-
-        <h1>Failed!</h1>
-        <p>Failed to insert activity log.</p>
-
-    <?php endif; ?>
-
-</body>
-
-</html>
