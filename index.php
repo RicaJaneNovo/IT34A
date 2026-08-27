@@ -53,7 +53,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $user_email,
             $action,
             $status
-            )
+            );
 
 
 
