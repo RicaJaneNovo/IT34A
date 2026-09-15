@@ -1,114 +1,87 @@
 <?php
+require __DIR__ . '/../config/config.php'; 
+require __DIR__ . '/../config/functions.php';
 
-session_start();
+// Ensure session_start(); is called (here or in config.php)
 
-require_once __DIR__ . '/../config/config.php';
+if(isset($_SESSION['user_id'])){
+    header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+    exit;
+}
 
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $username = trim($_POST['username'] ?? '');
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    $login = trim($_POST['login'] ?? '');
     $password = $_POST['password'] ?? '';
-
-    if ($username === '' || $password === '') {
-
-        $error = 'Please enter your username and password.';
+    
+    
+    if ($login==='' || $password==='') {
+        $error = 'Invalid login credentials';
+        logActivity(
+            $pdo, 
+            $login, 
+            'login',
+            'failed',
+        );
 
     } else {
+        if(loginUser($pdo, $login, $password)){
+        
+            logActivity(
+                $pdo, 
+                $_SESSION['user_id'], 
+                $_SESSION['user_username'], 
+                'login', 
+                'success'
+            );
 
-        $stmt = $pdo->prepare("
-            SELECT user_id, user_username, user_password, user_role
-            FROM users
-            WHERE user_username = ?
-            LIMIT 1
-        ");
-
-        $stmt->execute([$username]);
-
-        $user = $stmt->fetch();
-
-        if ($user && password_verify($password, $user['user_password'])) {
-
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['username'] = $user['user_username'];
-            $_SESSION['role'] = $user['user_role'];
-
-        if ($user['user_role'] === 'admin') {
-
-            header('Location: ../app/admin/index.php');
-                 exit;
-
-} elseif ($user['user_role'] === 'manager') {
-
-            header('Location: ../app/manager/index.php');
-               exit;
-
-} elseif ($user['user_role'] === 'user') {
-
-            header('Location: ../app/user/index.php');
-                exit;
-
-}
-
-            $error = 'Invalid username or password.';
+            header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+            exit;
         }
     }
-}
 
+    if (loginUser($pdo, $login, $password)){
+        header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+        exit;
+    }
+ 
+    $error = 'Invalid login credentials';
+
+    
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <body>
+            <?php if ($error): ?>
+                <p><?= htmlspecialchars($error)?></p>
+            <?php endif; ?>
+                
+        <h1>User Login</h1>
+            <form method="POST">
+            <label>User or email</label>
+            <input type="text"
+                    name="login"
+                    required
+            >
 
-    <title>Admin Login</title>
-</head>
+                <br>
+                <label>Password</label>
+                <input type="password"
+                        name="password"
+                        required
+                >
 
-<body>
-
-    <h1>Sign In</h1>
-
-    <?php if ($error !== ''): ?>
-
-        <p style="color: red;">
-            <?= htmlspecialchars($error) ?>
-        </p>
-
-    <?php endif; ?>
-
-    <form method="POST">
-
-    <p>
-        <label for="username">Username:</label>
-        <input
-            type="text"
-            id="username"
-            name="username"
-            autocomplete="off"
-            required
-        >
-    </p>
-
-    <p>
-        <label for="password">Password:</label>
-        <input
-            type="password"
-            id="password"
-            name="password"
-            required
-        >
-    </p>
-
-    <button type="submit">
-        SIGN IN
-    </button>
-
-</form>
-
-</body>
-
+            <br>
+            <button type="submit"> Sign-In</button>
+            </form>
+    </body>
 </html>
