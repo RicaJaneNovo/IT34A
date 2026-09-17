@@ -1,14 +1,28 @@
-CREATE TABLE IF NOT EXISTS activity_logs (
-    activity_log_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id VARCHAR(255),
-    user_email VARCHAR(255),
-    activity_log_action VARCHAR(50) NOT NULL,
-    activity_log_status ENUM('success', 'failure') DEFAULT 'success',
+/* =========================================================
+   TABLE #3: Users
+   ========================================================= */
 
-    -- Client Parameters
-    activity_log_ip_address VARCHAR(45),
-    activity_log_user_agent VARCHAR(255),
+CREATE TABLE IF NOT EXISTS users (
 
-    -- Timestamp
-    activity_log_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- Primary key
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+
+    -- User details
+    user_email VARCHAR(50) UNIQUE NOT NULL,
+    user_username VARCHAR(20) UNIQUE NOT NULL,
+    user_password VARCHAR(255) NOT NULL,
+
+    -- User role
+    user_role ENUM('admin', 'manager', 'user')
+        NOT NULL DEFAULT 'user',
+
+    -- User created timestamp
+    user_created_at TIMESTAMP
+        DEFAULT CURRENT_TIMESTAMP,
+
+    -- User updated timestamp
+    user_updated_at TIMESTAMP
+        DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+
 );
