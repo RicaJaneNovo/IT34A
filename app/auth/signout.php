@@ -10,8 +10,12 @@ if (isset($_SESSION['user_id'])) {
         'success'
     );
 }
+
+
+endUserSession($pdo);
+
 $_SESSION = [];
 session_destroy();
 
-header('Location: ../../test/index.php');
+header('Location: ../../index.php');
 exit;

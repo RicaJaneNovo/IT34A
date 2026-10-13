@@ -1,3 +1,4 @@
+
 <?php
 
 session_start();
@@ -26,15 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt->execute([$username]);
 
-        $user = $stmt->fetch();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['user_password'])) {
 
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['username'] = $user['user_username'];
-            $_SESSION['role'] = $user['user_role'];
-
             if ($user['user_role'] === 'admin') {
+
+                session_regenerate_id(true);
+
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['user_username'] = $user['user_username'];
+                $_SESSION['user_role'] = $user['user_role'];
 
                 header('Location: ../admin/index.php');
                 exit;
@@ -70,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($error !== ''): ?>
 
         <p style="color: red;">
-            <?= htmlspecialchars($error) ?>
+            <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?>
         </p>
 
     <?php endif; ?>
