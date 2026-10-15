@@ -1,10 +1,5 @@
 <?php
 
-function redirect($path) {
-    header("Location: " . BASE_URL . $path);
-    exit;
-}
-
 function loginUser($pdo,$login,$password) {
     //Appilcation Query #2
     $sql = "
@@ -40,8 +35,13 @@ function loginUser($pdo,$login,$password) {
     $_SESSION['user_username'] = $user['user_username'];
     $_SESSION['user_role'] = $user['user_role'];
 
+    //Initialize Session in database
+    $_SESSION['session_id'] = startUserSession($pdo);
+    
+
     return true;
 }
+
 
 function requireLogin() {
     if(!isset($_SESSION['user_id'])){
