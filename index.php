@@ -27,30 +27,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
     } else {
-        if (loginUser($pdo, $login, $password)) {
+        $result = loginUser($pdo, $login, $password);
 
+        if ($result === true) {
             logActivity(
                 $pdo,
                 $_SESSION['user_id'],
+                $_SESSION['user_email'],
                 'login',
                 'success'
             );
-
-            header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+             header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
             exit;
 
-        } else {
+        } elseif ($result === 'active_session') {
+            $error = 'This account is already logged in on another device';
+        }else {
             $error = 'Invalid login credentials';
-
             logActivity(
                 $pdo,
+                null,
                 $login,
                 'login',
                 'failed'
             );
         }
+
+
     }
 }
+
 ?>
 
 <!DOCTYPE html>
