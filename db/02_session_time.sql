@@ -16,3 +16,4 @@ CREATE TABLE user_sessions(
           ON UPDATE CASCADE
 
 );
+
